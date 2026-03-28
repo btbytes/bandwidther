@@ -8,6 +8,11 @@ $(TARGET): $(SWIFT_FILES)
 .PHONY:
 run:
 	./$(TARGET)
+
+.PHONY:
+format:
+	swift-format -i *.swift Views/*.swift
+
 .PHONY:
 clean:
 	rm -f $(TARGET)
