@@ -35,8 +35,8 @@ Important limitations:
 ```bash
 git clone https://github.com/simonw/bandwidther
 cd bandwidther
-swiftc -parse-as-library -framework SwiftUI -framework AppKit -o Bandwidther BandwidtherApp.swift
+make
 ./Bandwidther
 ```
 
-Requires macOS and Xcode command line tools (`xcode-select --install`).
+Requires macOS14+ and Xcode command line tools (`xcode-select --install`).
