@@ -1,7 +1,7 @@
 import AppKit
 import SwiftUI
 
-@preconcurrency import Foundation
+import Foundation
 
 class AppDelegate: NSObject, NSApplicationDelegate {
   var statusItem: NSStatusItem!

@@ -1,7 +1,6 @@
 import Darwin
 import Foundation
 
-@MainActor
 final class DNSCache {
   private var resolved: [String: DNSResult] = [:]
   private var pending: Set<String> = []
