@@ -8,9 +8,9 @@ func formatBytes(_ bytes: Double) -> String {
 }
 
 func formatBytesRate(_ bps: Double) -> String {
-  return "\(formatBytes(bps))/s"
+  "\(formatBytes(bps))/s"
 }
 
 func formatTotalBytes(_ bytes: UInt64) -> String {
-  return formatBytes(Double(bytes))
+  formatBytes(Double(bytes))
 }

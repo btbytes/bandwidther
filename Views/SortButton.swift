@@ -13,7 +13,7 @@ struct SortButton: View {
         ascending.toggle()
       } else {
         currentKey = key
-        ascending = key == .name ? false : false
+        ascending = false
       }
       action()
     } label: {

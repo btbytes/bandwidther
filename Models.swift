@@ -30,13 +30,18 @@ enum ProcessSortKey: String, CaseIterable {
   case name = "Name"
 }
 
+enum DNSResult {
+  case resolved(String)
+  case failed
+}
+
 struct ConnectionSummary {
   var internetCount: Int = 0
   var lanCount: Int = 0
   var internetProcesses: [String: Int] = [:]
   var lanProcesses: [String: Int] = [:]
-  var internetDestinations: [String] = []
-  var lanDestinations: [String] = []
+  var internetDestinations: Set<String> = []
+  var lanDestinations: Set<String> = []
 }
 
 struct NetworkEndpoint {
@@ -61,4 +66,11 @@ struct NettopResult {
   var totals: [String: NettopProcessData] = [:]
   var deltas: [String: NettopProcessData] = [:]
   var errorMessage: String?
+}
+
+enum AppConstants {
+  static let nettopRefreshInterval: TimeInterval = 3.0
+  static let connectionRefreshInterval: TimeInterval = 5.0
+  static let maxRateHistory = 60
+  static let maxDisplayedDestinations = 20
 }

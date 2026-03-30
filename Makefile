@@ -1,4 +1,4 @@
-SWIFT_FILES = $(shell find . -name '*.swift' -not -path './.build/*')
+SWIFT_FILES = Models.swift Formatting.swift DNSCache.swift NettopParser.swift ConnectionParser.swift NetworkMonitor.swift AppSettings.swift App.swift AppDelegate.swift Views/BarView.swift Views/ContentView.swift Views/ProcessBandwidthRow.swift Views/ProcessRow.swift Views/RateCardView.swift Views/SectionHeader.swift Views/SettingsView.swift Views/SortButton.swift Views/SparklineView.swift
 TARGET = Bandwidther
 
 $(TARGET): $(SWIFT_FILES)

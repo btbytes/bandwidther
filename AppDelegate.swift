@@ -1,11 +1,17 @@
 import AppKit
 import SwiftUI
 
+@preconcurrency import Foundation
+
 class AppDelegate: NSObject, NSApplicationDelegate {
   var statusItem: NSStatusItem!
   var popover: NSPopover!
 
   func applicationDidFinishLaunching(_ notification: Notification) {
+    if let icon = NSImage(systemSymbolName: "arrow.up.arrow.down", accessibilityDescription: nil) {
+      NSApplication.shared.applicationIconImage = icon
+    }
+
     statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
 
     if let button = statusItem.button {
@@ -21,7 +27,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     popover.contentViewController = NSHostingController(rootView: ContentView())
     self.popover = popover
 
-    NSApp.setActivationPolicy(.accessory)
+    if AppSettings.shared.showInDock || AppSettings.shared.showInAppSwitcher {
+      NSApp.setActivationPolicy(.regular)
+    } else {
+      NSApp.setActivationPolicy(.accessory)
+    }
   }
 
   @objc func togglePopover() {

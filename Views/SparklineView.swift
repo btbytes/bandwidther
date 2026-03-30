@@ -6,7 +6,8 @@ struct SparklineView: View {
 
   var body: some View {
     GeometryReader { geo in
-      let maxVal = max((data.max() ?? 1), 1)
+      let maxVal = data.max() ?? 0
+      let hasData = maxVal > 0
       let w = geo.size.width
       let h = geo.size.height
 
@@ -14,7 +15,7 @@ struct SparklineView: View {
         Path { path in
           for (i, val) in data.enumerated() {
             let x = w * CGFloat(i) / CGFloat(data.count - 1)
-            let y = h - (h * CGFloat(val / maxVal))
+            let y = hasData ? h - (h * CGFloat(val / maxVal)) : h
             if i == 0 {
               path.move(to: CGPoint(x: x, y: y))
             } else {
@@ -28,7 +29,7 @@ struct SparklineView: View {
           path.move(to: CGPoint(x: 0, y: h))
           for (i, val) in data.enumerated() {
             let x = w * CGFloat(i) / CGFloat(data.count - 1)
-            let y = h - (h * CGFloat(val / maxVal))
+            let y = hasData ? h - (h * CGFloat(val / maxVal)) : h
             if i == 0 {
               path.addLine(to: CGPoint(x: x, y: y))
             } else {

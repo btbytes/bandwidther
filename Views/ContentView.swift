@@ -212,7 +212,9 @@ struct ContentView: View {
       VStack(alignment: .leading, spacing: 6) {
         SectionHeader(title: "Internet Destinations", icon: "mappin.and.ellipse")
 
-        let dests = Array(Set(monitor.connectionSummary.internetDestinations)).sorted().prefix(20)
+        let dests = Array(monitor.connectionSummary.internetDestinations)
+          .sorted()
+          .prefix(AppConstants.maxDisplayedDestinations)
         if dests.isEmpty {
           Text("None")
             .font(.system(size: 11))
@@ -280,16 +282,7 @@ struct ContentView: View {
         .frame(width: 420)
       }
     }
-    .frame(width: 900, height: 720)
+    .frame(width: 900, height: 750)
     .background(.background)
-  }
-}
-
-class ContentHostingController: NSHostingController<ContentView> {
-  init() {
-    super.init(rootView: ContentView())
-  }
-  @objc required dynamic init?(coder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
   }
 }
