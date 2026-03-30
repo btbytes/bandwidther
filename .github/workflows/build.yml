@@ -71,9 +71,6 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
           TAP_REPO="homebrew-brew"
-          if ! gh repo view "btbytes/$TAP_REPO" >/dev/null 2>&1; then
-            gh repo create "btbytes/$TAP_REPO" --public --description "Homebrew tap for Bandwidther"
-          fi
 
           TMPDIR=$(mktemp -d)
           git clone "https://x-access-token:${GH_TOKEN}@github.com/btbytes/$TAP_REPO.git" "$TMPDIR"
