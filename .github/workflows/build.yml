@@ -58,7 +58,7 @@ jobs:
 
       - name: Update Homebrew tap
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.TAP_PAT }}
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           ZIP_URL="https://github.com/btbytes/bandwidther/releases/download/v${VERSION}/Bandwidther-${VERSION}.zip"
