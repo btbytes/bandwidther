@@ -70,7 +70,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          TAP_REPO="homebrew-brew"
+          TAP_REPO="brew"
 
           TMPDIR=$(mktemp -d)
           git clone "https://x-access-token:${GH_TOKEN}@github.com/btbytes/$TAP_REPO.git" "$TMPDIR"
