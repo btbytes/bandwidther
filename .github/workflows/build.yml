@@ -1,0 +1,92 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build macOS App
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate version
+        id: version
+        run: |
+          VERSION=$(date -u +%Y.%m.%d)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+
+      - name: Build
+        run: make
+
+      - name: Create release archive
+        run: |
+          mkdir -p release
+          cp Bandwidther release/
+          cp README.md release/
+          cd release
+          zip -r Bandwidther-${{ steps.version.outputs.version }}.zip .
+          mv Bandwidther-${{ steps.version.outputs.version }}.zip ..
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Bandwidther-${{ steps.version.outputs.version }}
+          path: Bandwidther-${{ steps.version.outputs.version }}.zip
+
+      - name: Create or update Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          TAG="v$VERSION"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" --clobber "Bandwidther-${VERSION}.zip"
+          else
+            gh release create "$TAG" \
+              --title "Build $VERSION" \
+              --generate-notes \
+              "Bandwidther-${VERSION}.zip"
+          fi
+
+      - name: Update Homebrew tap
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          ZIP_URL="https://github.com/btbytes/bandwidther/releases/download/v${VERSION}/Bandwidther-${VERSION}.zip"
+          SHA256=$(curl -sL "$ZIP_URL" | shasum -a 256 | awk '{print $1}')
+
+          export SHA256
+          FORMULA=$(bash .github/scripts/update-formula.sh "$VERSION" "$ZIP_URL")
+
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          TAP_REPO="homebrew-brew"
+          if ! gh repo view "btbytes/$TAP_REPO" >/dev/null 2>&1; then
+            gh repo create "btbytes/$TAP_REPO" --public --description "Homebrew tap for Bandwidther"
+          fi
+
+          TMPDIR=$(mktemp -d)
+          git clone "https://x-access-token:${GH_TOKEN}@github.com/btbytes/$TAP_REPO.git" "$TMPDIR"
+          cd "$TMPDIR"
+
+          mkdir -p Formula
+          echo "$FORMULA" > Formula/bandwidther.rb
+
+          if git diff --quiet HEAD -- Formula/bandwidther.rb 2>/dev/null; then
+            echo "Formula unchanged, skipping commit"
+            exit 0
+          fi
+
+          git add Formula/bandwidther.rb
+          git commit -m "Update bandwidther to $VERSION"
+          git push origin main
