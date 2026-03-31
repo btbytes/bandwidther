@@ -30,7 +30,7 @@ jobs:
       - name: Create release archive
         run: |
           mkdir -p release
-          cp Bandwidther release/
+          cp -R Bandwidther.app release/
           cp README.md release/
           cd release
           zip -r Bandwidther-${{ steps.version.outputs.version }}.zip .
@@ -76,14 +76,14 @@ jobs:
           git clone "https://x-access-token:${GH_TOKEN}@github.com/btbytes/$TAP_REPO.git" "$TMPDIR"
           cd "$TMPDIR"
 
-          mkdir -p Formula
-          echo "$FORMULA" > Formula/bandwidther.rb
+          mkdir -p Casks
+          echo "$FORMULA" > Casks/bandwidther.rb
 
-          if git diff --quiet HEAD -- Formula/bandwidther.rb 2>/dev/null; then
-            echo "Formula unchanged, skipping commit"
+          if git diff --quiet HEAD -- Casks/bandwidther.rb 2>/dev/null; then
+            echo "Cask unchanged, skipping commit"
             exit 0
           fi
 
-          git add Formula/bandwidther.rb
+          git add Casks/bandwidther.rb
           git commit -m "Update bandwidther to $VERSION"
           git push origin main
