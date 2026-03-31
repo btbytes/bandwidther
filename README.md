@@ -1,6 +1,6 @@
 # Bandwidther
 
-SwiftUI menu bar app for monitoring application bandwidth use.
+Bandwidther is a native macOS menu bar app for monitoring per-process network bandwidth in real time.
 
 > [!NOTE]
 > This app was vibe coded using Claude Opus 4.6 and GPT-5.4. I do not have deep knowledge of macOS networking or SwiftUI such that I can confidently evaluate the end result.
@@ -9,47 +9,67 @@ SwiftUI menu bar app for monitoring application bandwidth use.
 
 ## Features
 
-- Live per-process download/upload rates via `nettop`
-- Internet vs LAN connection classification
-- Reverse DNS resolution for remote destinations
-- Sparkline bandwidth graph (last 60 seconds)
-- Two-column popover panel from the menu bar
+- Live per-process download and upload rates from `nettop`
+- Sortable process list by rate, download, upload, total bytes, or name
+- Menu bar popover with overall rates, cumulative totals, and a 60-sample sparkline
+- Internet vs LAN/local connection summaries grouped by process
+- Internet destination list with best-effort reverse DNS lookup
+- Simple app visibility settings for Dock and Cmd-Tab app switcher presence
 
-## How measurement works
+## Requirements
 
-Bandwidther uses macOS command-line networking tools rather than packet capture or private APIs.
+- macOS 14+
+- Xcode command line tools (`xcode-select --install`)
 
-- Per-process bandwidth comes from `nettop` in per-process summary mode. The app runs `nettop` in delta mode, takes a baseline sample plus a 1-second follow-up sample, and uses that second sample as the current download/upload rate for each process.
-- The cumulative byte totals shown in the UI come from the baseline `nettop` sample. Those are process-level totals reported by `nettop`, not totals maintained independently by the app.
-- Connection summaries come from `lsof -iTCP -n -P`. The app parses active TCP sockets, attributes them to processes using `lsof` output, and classifies remote endpoints as internet or LAN/local using address heuristics.
-- Reverse DNS is done separately in the app using `getnameinfo`, so destination names are best-effort and may be missing even when the raw IP address is shown.
-
-Important limitations:
-
-- The connection view is a snapshot of currently visible TCP sockets. It is not a packet-level audit and it does not currently include UDP traffic in the summary panels.
-- LAN vs internet classification is heuristic. Private IPv4 ranges, loopback, link-local IPv6, and unique-local IPv6 are treated as local.
-- If `nettop` or `lsof` is unavailable or denied by the system, the app may be unable to collect some measurements. Recent versions of the app surface `nettop` failures in the UI instead of silently showing zero traffic.
-
-## Building
-
-```bash
-git clone https://github.com/btbytes/bandwidther
-cd bandwidther
-make
-./Bandwidther
-```
-
-Requires macOS14+ and Xcode command line tools (`xcode-select --install`).
-
-## Installation
+## Install
 
 ### Homebrew
 
 ```bash
 brew tap btbytes/brew
-brew install bandwidther
+brew install --cask bandwidther
 ```
 
 ### Manual download
 
 Download the latest release from the [Releases page](https://github.com/btbytes/bandwidther/releases).
+
+## Build from source
+
+This repo builds directly with the included `Makefile`; there is no Xcode project required.
+
+```bash
+git clone https://github.com/btbytes/bandwidther
+cd bandwidther
+make
+open Bandwidther.app
+```
+
+Or build and launch in one step:
+
+```bash
+make run
+```
+
+## How it works
+
+Bandwidther uses built-in macOS command-line tools rather than packet capture or private APIs.
+
+- Per-process bandwidth comes from `nettop` in delta mode. The app requests two samples and uses the second sample as the current per-process download and upload rate.
+- The cumulative totals shown in the UI come from the baseline `nettop` sample. They are totals reported by `nettop`, not counters maintained independently by the app.
+- Connection summaries come from `lsof -n -P -iTCP -iUDP`. The app parses socket entries, attributes them to processes, and classifies remote endpoints as internet or LAN/local using address heuristics.
+- Reverse DNS uses `getnameinfo`, so hostnames are best effort and some destinations may remain as raw IP addresses.
+
+## Limitations
+
+- The connection panels are socket snapshots, not packet-level accounting.
+- LAN vs internet classification is heuristic. Private IPv4, loopback, link-local IPv6, unique-local IPv6, carrier-grade NAT space, and benchmark ranges are treated as local.
+- The destination list currently focuses on internet destinations in the main UI.
+- If `nettop` or `lsof` is unavailable or blocked by the system, Bandwidther may show incomplete data. `nettop` failures are surfaced in the UI.
+
+## Settings
+
+Bandwidther includes a small Settings window with toggles for:
+
+- showing the app in the Dock
+- showing the app in the Cmd-Tab app switcher
