@@ -7,7 +7,7 @@ APP_RESOURCES = $(APP_CONTENTS)/Resources
 
 VERSION := $(shell cat VERSION)
 MAJOR_MINOR := $(word 1,$(subst ., ,$(VERSION))).$(word 2,$(subst ., ,$(VERSION)))
-PATCH := $(word 3,$(subst ., ,$(VERSION)))
+PATCH := $(shell git rev-list --count HEAD)
 
 $(APP_BUNDLE): $(SWIFT_FILES)
 	mkdir -p $(APP_MACOS) $(APP_RESOURCES)
