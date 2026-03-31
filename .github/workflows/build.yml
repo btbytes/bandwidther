@@ -81,11 +81,15 @@ jobs:
           mkdir -p Casks
           echo "$FORMULA" > Casks/bandwidther.rb
 
-          if git diff --quiet HEAD -- Casks/bandwidther.rb 2>/dev/null; then
+          rm -f Formula/bandwidther.rb
+          rmdir Formula 2>/dev/null || true
+
+          if git diff --quiet HEAD -- Casks/bandwidther.rb 2>/dev/null && [ -z "$(git status --porcelain Casks/bandwidther.rb 2>/dev/null)" ]; then
             echo "Cask unchanged, skipping commit"
             exit 0
           fi
 
           git add Casks/bandwidther.rb
+          git rm -rf Formula 2>/dev/null || true
           git commit -m "Update bandwidther to $VERSION"
           git push origin main
