@@ -20,7 +20,9 @@ jobs:
       - name: Read version
         id: version
         run: |
-          VERSION=$(cat VERSION)
+          MAJOR_MINOR=$(cat VERSION)
+          PATCH=${{ github.run_number }}
+          VERSION="${MAJOR_MINOR}.${PATCH}"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Version: $VERSION"
 
