@@ -18,6 +18,14 @@ struct SettingsView: View {
       Text("When enabled, Bandwidther will appear in the Cmd-Tab app switcher.")
         .font(.caption)
         .foregroundColor(.secondary)
+
+      Divider()
+
+      Toggle("Launch at Login", isOn: $settings.launchAtLogin)
+        .toggleStyle(.switch)
+      Text("When enabled, Bandwidther will start automatically when you log in.")
+        .font(.caption)
+        .foregroundColor(.secondary)
     }
     .padding()
     .frame(width: 360)

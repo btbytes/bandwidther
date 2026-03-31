@@ -1,5 +1,6 @@
 import AppKit
 import Foundation
+import ServiceManagement
 
 @MainActor
 class AppSettings: ObservableObject {
@@ -19,9 +20,17 @@ class AppSettings: ObservableObject {
     }
   }
 
+  @Published var launchAtLogin: Bool {
+    didSet {
+      UserDefaults.standard.set(launchAtLogin, forKey: "launchAtLogin")
+      updateLoginItem()
+    }
+  }
+
   private init() {
     self.showInAppSwitcher = UserDefaults.standard.object(forKey: "showInAppSwitcher") as? Bool ?? true
     self.showInDock = UserDefaults.standard.object(forKey: "showInDock") as? Bool ?? true
+    self.launchAtLogin = UserDefaults.standard.object(forKey: "launchAtLogin") as? Bool ?? false
   }
 
   private func applyActivationPolicy() {
@@ -29,6 +38,18 @@ class AppSettings: ObservableObject {
       NSApp.setActivationPolicy(.regular)
     } else {
       NSApp.setActivationPolicy(.accessory)
+    }
+  }
+
+  private func updateLoginItem() {
+    do {
+      if launchAtLogin {
+        try SMAppService.mainApp.register()
+      } else {
+        try SMAppService.mainApp.unregister()
+      }
+    } catch {
+      print("Failed to update login item: \(error)")
     }
   }
 }

@@ -73,3 +73,4 @@ Bandwidther includes a small Settings window with toggles for:
 
 - showing the app in the Dock
 - showing the app in the Cmd-Tab app switcher
+- launching the app at login
