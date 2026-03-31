@@ -5,6 +5,10 @@ APP_CONTENTS = $(APP_BUNDLE)/Contents
 APP_MACOS = $(APP_CONTENTS)/MacOS
 APP_RESOURCES = $(APP_CONTENTS)/Resources
 
+VERSION := $(shell cat VERSION)
+MAJOR_MINOR := $(word 1,$(subst ., ,$(VERSION))).$(word 2,$(subst ., ,$(VERSION)))
+PATCH := $(word 3,$(subst ., ,$(VERSION)))
+
 $(APP_BUNDLE): $(SWIFT_FILES)
 	mkdir -p $(APP_MACOS) $(APP_RESOURCES)
 	swiftc -parse-as-library -framework SwiftUI -framework AppKit -o $(APP_MACOS)/$(TARGET) $(SWIFT_FILES)
@@ -12,8 +16,8 @@ $(APP_BUNDLE): $(SWIFT_FILES)
 	/usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string com.btbytes.bandwidther" $(APP_CONTENTS)/Info.plist
 	/usr/libexec/PlistBuddy -c "Add :CFBundleName string $(TARGET)" $(APP_CONTENTS)/Info.plist
 	/usr/libexec/PlistBuddy -c "Add :CFBundlePackageType string APPL" $(APP_CONTENTS)/Info.plist
-	/usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string 1.0" $(APP_CONTENTS)/Info.plist
-	/usr/libexec/PlistBuddy -c "Add :CFBundleVersion string 1" $(APP_CONTENTS)/Info.plist
+	/usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string $(MAJOR_MINOR)" $(APP_CONTENTS)/Info.plist
+	/usr/libexec/PlistBuddy -c "Add :CFBundleVersion string $(PATCH)" $(APP_CONTENTS)/Info.plist
 	/usr/libexec/PlistBuddy -c "Add :LSMinimumSystemVersion string 14.0" $(APP_CONTENTS)/Info.plist
 	/usr/libexec/PlistBuddy -c "Add :NSPrincipalClass string NSApplication" $(APP_CONTENTS)/Info.plist
 
